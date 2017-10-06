@@ -17,11 +17,14 @@ api = tweepy.API(auth1)
 handle = input("Input Twitter Handle: ")
 user = api.get_user(handle)
 
-print("\nTwitter Handle: {}".format(user.screen_name))
-print("\nName: {}".format(user.name))
-print("Description: {}".format(user.description))
-print("Followers: {}".format(user.followers_count))
-print("Friends: {}".format(user.friends_count))
+for status in tweepy.Cursor(api.user_timeline, id =handle).items():
+	print ("\n{}".format(status.text))
+
+# print("\nTwitter Handle: {}".format(user.screen_name))
+# print("\nName: {}".format(user.name))
+# print("Description: {}".format(user.description))
+# print("Followers: {}".format(user.followers_count))
+# print("Friends: {}".format(user.friends_count))
 
 
 # Streaming tweets, not used?
