@@ -17,8 +17,18 @@ api = tweepy.API(auth1)
 handle = input("Input Twitter Handle: ")
 user = api.get_user(handle)
 
-for status in tweepy.Cursor(api.user_timeline, id =handle).items():
-	print ("\n{}".format(status.text))
+result = []
+for status in tweepy.Cursor(api.user_timeline, id =handle).items(10):
+	result.append(status.text)
+	#print ("\n{}".format(status.text))
+#print("{}".format(result))
+
+keywrd = input("Please enter a search term: ")
+count=0
+for x in result[:]:
+	if x == keywrd:
+		count += 1
+		print ("{}".format(x))
 
 # print("\nTwitter Handle: {}".format(user.screen_name))
 # print("\nName: {}".format(user.name))
