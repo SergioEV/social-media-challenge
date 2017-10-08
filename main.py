@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import tweepy
 
 ## 15 CALLS EVERY 15 MINUTES. Running program too many times will give status code 429
@@ -16,28 +18,38 @@ auth1.set_access_token(access_token_key, access_token_secret)
 
 api = tweepy.API(auth1)
 
+#Clear file
+open('Output.txt', 'w').close()
+
 handle = input("Input Twitter Handle: ")
-keywrd = input("Please enter a search term: ")
+keywrd = input("Enter A Search Term: ")
+#add spaces around string, prevents false-positives
+keywrd = " " + keywrd + " "
 user = api.get_user(handle)
 
 count = 0
-for status in tweepy.Cursor(api.user_timeline, id = handle).items(100):
-	if "RT" in status.text:
+
+#Going over 3200 items may cause temporary blacklist from twitter
+for status in tweepy.Cursor(api.user_timeline, id = handle).items(3200):
+
+	tweet = status.text
+
+	#remove retweets
+	if "RT" in tweet:
 		continue
 
-	#Use below to print to text file
-	#with open("Output.txt", "a") as text_file:
-		#print("{}\n".format(str.lower(status.text)), file=text_file)	
+	#destructively edits tweet string, deletes garbage characters
+	tweet = tweet.translate(str.maketrans('','', '.-?,!()"{}[]:'  ))
 
-	if keywrd in str.lower(status.text):
-		count+=1
+	# If we encounter word, increase count by one, write edited tweet to text file.
+	if keywrd in str.lower(tweet):
+		count += 1
+		with open("Output.txt", "a") as text_file:
+		 print("{}\n".format(str.lower(tweet)), file=text_file)
+
 
 print("\nName: {}".format(user.name))
 print("Description: {}".format(user.description))
 print("Followers: {}".format(user.followers_count))
 print("Friends: {}".format(user.friends_count))
-print("# of hits for {}: {}".format(keywrd,count))
-	
-
-
-	
+print("# of hits for '{}': {}".format(keywrd,count))
